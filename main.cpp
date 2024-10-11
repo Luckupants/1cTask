@@ -33,10 +33,9 @@ class App {
           break;
         }
         case ParseResult::kAppendix: {
-          auto last_word = std::string(trie.GetCurWord());
           trie.MoveForward(splitted_input[1], false);
           std::cout << std::format("Appended, suggesting for {}",
-                                   last_word + std::string(splitted_input[1]))
+                                   trie.GetCurWord())
                     << std::endl;
           ShowResult();
           break;
@@ -71,12 +70,13 @@ class App {
 
     void AddWord(std::string_view word) {
       cur_pos_ = 0;
+      cur_word_.clear();
       MoveForward(word, true);
       ++nodes_[cur_pos_].words_count_;
       auto idx = cur_pos_;
-      while (idx != -1 && nodes_[idx].parent_ != -1) {
-        nodes_[idx].max_word_count =
+      nodes_[idx].max_word_count =
             std::max(nodes_[idx].max_word_count, nodes_[idx].words_count_);
+      while (nodes_[idx].parent_ != -1) {
         const auto parent = nodes_[idx].parent_;
         nodes_[parent].max_word_count =
             std::max(nodes_[parent].max_word_count, nodes_[idx].max_word_count);
