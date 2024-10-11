@@ -3,7 +3,6 @@
 #include <deque>
 #include <format>
 #include <iostream>
-#include <queue>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -127,9 +126,9 @@ class App {
           }
         }
         if (idx_max == -1) {
-          return is_terminate ? suggestion : std::string();
+          return is_terminate ? suggestion : "";
         }
-        if (is_terminate && cur_node.max_word_count >= sons_max) {
+        if (is_terminate && cur_node.words_count_ >= sons_max) {
           return suggestion;
         }
         suggestion += max_letter;
