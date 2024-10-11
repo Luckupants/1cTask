@@ -16,12 +16,12 @@ class Trie {
       MoveForward(word, true);
       ++nodes_[cur_pos_].words_count_;
       auto idx = cur_pos_;
-      nodes_[idx].max_word_count =
-            std::max(nodes_[idx].max_word_count, nodes_[idx].words_count_);
+      nodes_[idx].max_words_count =
+            std::max(nodes_[idx].max_words_count, nodes_[idx].words_count_);
       while (nodes_[idx].parent_ != -1) {
         const auto parent = nodes_[idx].parent_;
-        nodes_[parent].max_word_count =
-            std::max(nodes_[parent].max_word_count, nodes_[idx].max_word_count);
+        nodes_[parent].max_words_count =
+            std::max(nodes_[parent].max_words_count, nodes_[idx].max_words_count);
         idx = parent;
       }
     }
@@ -56,22 +56,21 @@ class Trie {
       std::int32_t suggestion_pos = cur_pos_;
       while (true) {
         const auto& cur_node = nodes_[suggestion_pos];
-        bool is_terminate = cur_node.words_count_ > 0;
         std::uint32_t sons_max = 0;
         std::uint32_t idx_max = -1;
         char max_letter;
         for (const auto& [letter, son] : cur_node.next_) {
           const auto& son_node = nodes_[son];
-          if (son_node.max_word_count > sons_max) {
-            sons_max = son_node.max_word_count;
+          if (son_node.max_words_count > sons_max) {
+            sons_max = son_node.max_words_count;
             idx_max = son;
             max_letter = letter;
           }
         }
         if (idx_max == -1) {
-          return is_terminate ? suggestion : "";
+          return cur_node.words_count_ > 0 ? suggestion : "";
         }
-        if (is_terminate && cur_node.words_count_ >= sons_max) {
+        if (cur_node.words_count_ >= sons_max) {
           return suggestion;
         }
         suggestion += max_letter;
@@ -84,7 +83,7 @@ class Trie {
       std::unordered_map<char, std::int32_t> next_;
       std::int32_t parent_ = -1;
       std::int32_t words_count_ = 0;
-      std::int32_t max_word_count = 0;
+      std::int32_t max_words_count = 0;
     };
 
     std::vector<Node> nodes_;
